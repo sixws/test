@@ -160,6 +160,7 @@ const Game = {
     UI.updateHUD();
 
     if (this.pendingLevels > 0 && this.state === 'playing') this.openLevelUp();
+      this.trauma = Math.min(1.0, Math.max(0, this.trauma)); 
   },
 
   onWave() {
