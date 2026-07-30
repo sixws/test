@@ -172,7 +172,10 @@ const WeaponSys = {
     UI.weaponsDirty = true;
   },
   get(key) { return player.weapons.find(w => w.key === key); },
-  stats(w) { return WEAPONS[w.key].lv[w.lv - 1]; },
+ stats(w) {
+  const arr = WEAPONS[w.key].lv;
+  return arr[Math.min(w.lv - 1, arr.length - 1)];
+},
 
   update(dt) {
     const p = player;
@@ -361,9 +364,16 @@ function applyUpgrade(opt) {
   if (opt.kind === 'wnew') {
     WeaponSys.add(opt.key);
   } else if (opt.kind === 'wup') {
-    WeaponSys.get(opt.key).lv++;
+
+    const w = WeaponSys.get(opt.key);
+    const max = WEAPONS[opt.key].max;
+
+    if (w && w.lv < max) {
+        w.lv++;
+    }
+
     UI.weaponsDirty = true;
-  } else if (opt.kind === 'p') {
+} else if (opt.kind === 'p') {
     player.passives[opt.key] = (player.passives[opt.key] || 0) + 1;
     PASSIVES[opt.key].apply();
   } else {
