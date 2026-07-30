@@ -149,6 +149,8 @@ const Game = {
     updatePlayer(dt);
     WeaponSys.update(dt);
     updateEnemies(dt);
+    cleanupEnemies();
+
     updateBullets(dt);
     updateMissiles(dt);
     updateEBullets(dt);
@@ -160,7 +162,8 @@ const Game = {
     UI.updateHUD();
 
     if (this.pendingLevels > 0 && this.state === 'playing') this.openLevelUp();
-      this.trauma = Math.min(1.0, Math.max(0, this.trauma)); 
+    // 在 update(rdt) 的逻辑末尾加上这行：
+    this.trauma = Math.min(1.0, Math.max(0, this.trauma)); // 强制将震动强度锁死在 0 ~ 1.0 之间
   },
 
   onWave() {
@@ -562,3 +565,13 @@ const Game = {
     ctx.restore();
   },
 };
+function cleanupEnemies() {
+  for (let i = enemies.length - 1; i >= 0;) {
+    if (enemies[i].dead) {
+      enemies[i] = enemies[enemies.length - 1];
+      enemies.pop();
+    } else {
+      i--;
+    }
+  }
+}
