@@ -29,6 +29,33 @@
   Input.init(canvas);
   UI.init();
   Game.init();
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+if (fullscreenBtn) {
+  fullscreenBtn.addEventListener('click', async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+
+        if (screen.orientation?.lock) {
+          await screen.orientation.lock('landscape');
+        }
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch (e) {
+      console.log('全屏失败:', e);
+    }
+  });
+}
+
+document.addEventListener('fullscreenchange', () => {
+  resize();
+  if (fullscreenBtn) {
+    fullscreenBtn.textContent =
+      document.fullscreenElement ? '退出全屏' : '全 屏';
+  }
+});
   resize();
   addEventListener('resize', resize);
   requestAnimationFrame((t) => { last = t; requestAnimationFrame(frame); });
