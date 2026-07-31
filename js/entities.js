@@ -539,7 +539,7 @@ function drawEnemies(ctx) {
 
 /* ---------------- 玩家子弹 ---------------- */
 function spawnBullet(x, y, vx, vy, dmg, pierce, col = '#7ef9ff') {
-  bullets.push({ x, y, vx, vy, dmg, pierce, r: 4, life: 1.15, col, hit: null });
+  bullets.push({ x, y, vx, vy, dmg, pierce, r: 4, life: 3, col, hit: null });
 }
 
 function updateBullets(dt) {
