@@ -222,7 +222,7 @@ html, body {
 }
 #dashBtn {
   position: fixed; right: 28px; bottom: 34px; z-index: 30;
-  width: 78px; height: 78px; border-radius: 50%;
+  width: 84px; height: 84px; border-radius: 50%;
   display: none; align-items: center; justify-content: center;
   font-family: var(--font-ui); font-size: 16px; font-weight: 700;
   color: var(--cyan); letter-spacing: 2px;
@@ -230,6 +230,12 @@ html, body {
   background: rgba(126,249,255,0.08);
   box-shadow: 0 0 22px rgba(126,249,255,0.25);
   pointer-events: auto;
+  user-select: none; -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+#dashBtn::after {
+  content: ''; position: absolute; inset: -14px; border-radius: 50%;
 }
 body.touch #dashBtn { display: flex; }
 #dashBtn:active { background: rgba(126,249,255,0.28); transform: scale(0.94); }
@@ -470,7 +476,13 @@ kbd {
   .wslot { width: 36px; height: 36px; }
   .wslot svg { width: 22px; height: 22px; }
   #boss-bar { margin-top: 6px; height: 10px; }
-  #dashBtn { right: 16px; bottom: 18px; width: 64px; height: 64px; font-size: 14px; }
+  #dashBtn {
+    right: 20px; bottom: 26px;
+    width: 110px; height: 110px; font-size: 17px;
+    border-color: rgba(126,249,255,0.42);
+    background: rgba(126,249,255,0.07);
+    box-shadow: 0 0 30px rgba(126,249,255,0.22);
+  }
   .stats { grid-template-columns: 1fr; gap: 6px; }
   .card { width: min(78vw, 300px); min-height: 0; padding: 18px 16px; }
   .card-icon svg { width: 44px; height: 44px; }
