@@ -6,6 +6,7 @@ const UI = {
   _cache: {},
   _lastCombo: 0,
   _curOpts: null,
+  _cursor: 0,
 
   init() {
     const ids = [
@@ -130,6 +131,7 @@ const UI = {
 
   showUpgrades(opts) {
     this._curOpts = opts;
+    this._cursor = 0;
     const wrap = this.els.cards;
     wrap.innerHTML = '';
     opts.forEach((opt, i) => {
@@ -149,6 +151,7 @@ const UI = {
       });
       wrap.appendChild(card);
     });
+    this.highlightCards();
     this.showScreen('levelup');
   },
 
@@ -156,6 +159,27 @@ const UI = {
     if (this._curOpts && this._curOpts[i]) {
       AudioSys.uiClick();
       Game.chooseUpgrade(this._curOpts[i]);
+    }
+  },
+
+  moveCursor(d) {
+    if (!this._curOpts || !this._curOpts.length) return;
+    this._cursor = (this._cursor + d + this._curOpts.length) % this._curOpts.length;
+    this.highlightCards();
+    AudioSys.uiClick();
+  },
+
+  highlightCards() {
+    const cards = this.els.cards.children;
+    for (let i = 0; i < cards.length; i++) {
+      cards[i].classList.toggle('selected', i === this._cursor);
+    }
+  },
+
+  pickCursor() {
+    if (this._curOpts && this._curOpts[this._cursor]) {
+      AudioSys.uiClick();
+      Game.chooseUpgrade(this._curOpts[this._cursor]);
     }
   },
 

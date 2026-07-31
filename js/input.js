@@ -4,6 +4,9 @@ const Input = {
   keys: Object.create(null),
   joy: { active: false, id: null, ox: 0, oy: 0, x: 0, y: 0 },
   dashQueued: false,
+  pad: { dashPrev: false, dashEdge: false, confirmPrev: false, confirmEdge: false,
+         pausePrev: false, pauseEdge: false, navPrevL: false, navLEdge: false,
+         navPrevR: false, navREdge: false, x: 0, y: 0 },
   joyEl: null, stickEl: null,
 
   init(canvas) {
@@ -73,21 +76,79 @@ const Input = {
     dashBtn.addEventListener('click', (e) => { e.preventDefault(); this.dashQueued = true; });
   },
 
+  pollPad() {
+    this.pad.x = 0; this.pad.y = 0;
+    if (!navigator.getGamepads) return;
+    let gp = null;
+    for (const p of navigator.getGamepads()) {
+      if (p && p.connected) { gp = p; break; }
+    }
+    if (!gp) {
+      this.pad.dashPrev = false;
+      this.pad.confirmPrev = false;
+      this.pad.pausePrev = false;
+      this.pad.navPrevL = false;
+      this.pad.navPrevR = false;
+      return;
+    }
+    const DEAD = 0.18;
+    let x = gp.axes[0] || 0, y = gp.axes[1] || 0;
+    const l = Math.hypot(x, y);
+    if (l > 0 && l < DEAD) { x = 0; y = 0; }
+    if (l > 1) { x /= l; y /= l; }
+    const b = gp.buttons;
+    if (b[12] && b[12].pressed) y = -1;
+    if (b[13] && b[13].pressed) y = 1;
+    if (b[14] && b[14].pressed) x = -1;
+    if (b[15] && b[15].pressed) x = 1;
+    this.pad.x = x; this.pad.y = y;
+    const dashNow = !!(b[5] && b[5].pressed);
+    if (dashNow && !this.pad.dashPrev) this.pad.dashEdge = true;
+    this.pad.dashPrev = dashNow;
+    const navL = (b[14] && b[14].pressed) || x < -0.6;
+    const navR = (b[15] && b[15].pressed) || x > 0.6;
+    if (navL && !this.pad.navPrevL) this.pad.navLEdge = true;
+    if (navR && !this.pad.navPrevR) this.pad.navREdge = true;
+    this.pad.navPrevL = navL; this.pad.navPrevR = navR;
+    const confirmNow = !!(b[0] && b[0].pressed);
+    if (confirmNow && !this.pad.confirmPrev) this.pad.confirmEdge = true;
+    this.pad.confirmPrev = confirmNow;
+    const pauseNow = !!(b[9] && b[9].pressed);
+    if (pauseNow && !this.pad.pausePrev) this.pad.pauseEdge = true;
+    this.pad.pausePrev = pauseNow;
+  },
+
+  consumePadUI() {
+    this.pollPad();
+    const r = {
+      confirm: this.pad.confirmEdge,
+      pause: this.pad.pauseEdge,
+      left: this.pad.navLEdge,
+      right: this.pad.navREdge,
+    };
+    this.pad.confirmEdge = false; this.pad.pauseEdge = false;
+    this.pad.navLEdge = false; this.pad.navREdge = false;
+    return r;
+  },
+
   getMove() {
+    this.pollPad();
     let x = 0, y = 0;
     if (this.keys.KeyW || this.keys.ArrowUp) y -= 1;
     if (this.keys.KeyS || this.keys.ArrowDown) y += 1;
     if (this.keys.KeyA || this.keys.ArrowLeft) x -= 1;
     if (this.keys.KeyD || this.keys.ArrowRight) x += 1;
     if (this.joy.active) { x = this.joy.x; y = this.joy.y; }
+    x += this.pad.x; y += this.pad.y;
     const l = Math.hypot(x, y);
     if (l > 1) { x /= l; y /= l; }
     return { x, y };
   },
 
   consumeDash() {
-    const d = this.dashQueued;
+    const d = this.dashQueued || this.pad.dashEdge;
     this.dashQueued = false;
+    this.pad.dashEdge = false;
     return d;
   },
 };

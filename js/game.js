@@ -86,6 +86,33 @@ const Game = {
     }
   },
 
+  handlePadUI() {
+    const pad = Input.consumePadUI();
+    if (!(pad.confirm || pad.pause || pad.left || pad.right)) return;
+    const st = this.state;
+    if (pad.pause) {
+      if (st === 'playing' || st === 'paused') { this.togglePause(); return; }
+      if (st === 'menu' || st === 'over') {
+        AudioSys.init(); AudioSys.resume();
+        this.start();
+        return;
+      }
+    }
+    if (pad.confirm) {
+      if (st === 'menu' || st === 'over') {
+        AudioSys.init(); AudioSys.resume();
+        this.start();
+        return;
+      }
+      if (st === 'levelup') { UI.pickCursor(); return; }
+      if (st === 'paused') { this.togglePause(); return; }
+    }
+    if (st === 'levelup') {
+      if (pad.left) UI.moveCursor(-1);
+      if (pad.right) UI.moveCursor(1);
+    }
+  },
+
   gameOver() {
     this.state = 'over';
     this.timeScale = 1;
@@ -108,6 +135,7 @@ const Game = {
 
   /* ---------- 主更新 ---------- */
   update(rdt) {
+    this.handlePadUI();
     this.elapsed += rdt;
     if (this.state === 'menu') {
       World.update(rdt, World.W / 2 + Math.sin(this.elapsed * 0.1) * 260, World.H / 2 + Math.cos(this.elapsed * 0.13) * 200);

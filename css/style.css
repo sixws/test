@@ -357,6 +357,13 @@ kbd {
   z-index: 1;
 }
 .card:active { transform: translateY(-3px) scale(1.0); }
+.card.selected {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 22px 60px rgba(0,0,0,0.6), 0 0 38px var(--col);
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+  z-index: 1;
+}
 .card-icon { color: var(--col); margin-top: 4px; }
 .card-icon svg { width: 62px; height: 62px; filter: drop-shadow(0 0 10px currentColor); }
 .card-name {
