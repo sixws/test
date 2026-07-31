@@ -446,18 +446,54 @@ kbd {
 }
 
 /* ---------- 响应式 ---------- */
-@media (max-width: 640px) {
-  #hud-tl { top: 10px; left: 10px; }
-  #level-badge { width: 44px; height: 44px; border-radius: 10px; }
+@media (max-width: 900px), (max-height: 560px) {
+  /* 全屏界面可滚动，内容超高时不再被裁；优先居中，放不下时从顶部排布 */
+  .screen {
+    justify-content: flex-start;
+    justify-content: safe center;
+    overflow-y: auto;
+    padding: 22px 14px;
+    gap: 14px;
+  }
+  #hud-tl { top: 8px; left: 10px; }
+  #hud-tc { top: 8px; }
+  #hud-tr { top: 8px; right: 12px; }
+  #level-badge { width: 42px; height: 42px; border-radius: 10px; }
   #level-badge b { font-size: 15px; }
-  .bar.hp { height: 14px; }
+  .bar.hp { height: 13px; }
   .bar-text { font-size: 10px; }
   #score { font-size: 20px; }
-  #wave-label { font-size: 16px; letter-spacing: 5px; }
-  #timer { font-size: 12px; }
+  #combo { font-size: 15px; }
+  #wave-label { font-size: 15px; letter-spacing: 5px; }
+  #timer { font-size: 11px; }
+  #weapons-row { margin-top: 6px; gap: 6px; }
+  .wslot { width: 36px; height: 36px; }
+  .wslot svg { width: 22px; height: 22px; }
+  #boss-bar { margin-top: 6px; height: 10px; }
+  #dashBtn { right: 16px; bottom: 18px; width: 64px; height: 64px; font-size: 14px; }
   .stats { grid-template-columns: 1fr; gap: 6px; }
   .card { width: min(78vw, 300px); min-height: 0; padding: 18px 16px; }
   .card-icon svg { width: 44px; height: 44px; }
   #cards { gap: 12px; }
-  .controls-grid { display: none; }
+  .controls-grid { gap: 8px 18px; }
+  .controls-grid > div { font-size: 12px; gap: 7px; }
+  .controls-grid kbd { font-size: 10px; padding: 2px 8px; }
+  .controls-grid .kbd-only { display: none; }
+  #credits { position: static; margin-top: 4px; }
+}
+/* 矮屏（横屏手机 / 小高度窗口）额外压缩 */
+@media (max-height: 560px) {
+  .screen { gap: 8px; padding-top: 14px; padding-bottom: 14px; }
+  #title-zh { font-size: 14px; letter-spacing: 12px; margin-left: 12px; }
+  #title-en { font-size: clamp(24px, 7vw, 38px); }
+  #subtitle { font-size: 11px; letter-spacing: 4px; }
+  #best-line { font-size: 11px; }
+  #pad-tip { font-size: 10px; padding: 2px 10px; }
+  .btn { font-size: 13px; padding: 8px 26px; }
+  .btn.big { font-size: 14px; padding: 9px 30px; }
+  .controls-grid { gap: 5px 12px; }
+  .controls-grid > div { font-size: 11px; gap: 6px; }
+  .controls-grid kbd { font-size: 9px; padding: 1px 6px; }
+  .lvl-title { font-size: 16px; letter-spacing: 5px; }
+  #over-title { font-size: clamp(28px, 6vw, 44px); }
 }

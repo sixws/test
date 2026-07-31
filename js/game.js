@@ -231,12 +231,13 @@ const Game = {
   },
 
   spawnPos() {
-    const R = Math.hypot(World.vw, World.vh) / 2 + U.rand(70, 210);
+    const viewW = World.vw / World.zoom, viewH = World.vh / World.zoom;
+    const R = Math.hypot(viewW, viewH) / 2 + U.rand(70, 210);
     for (let i = 0; i < 6; i++) {
       const a = U.rand(TAU);
       const x = U.clamp(player.x + Math.cos(a) * R, 40, World.W - 40);
       const y = U.clamp(player.y + Math.sin(a) * R, 40, World.H - 40);
-      if (Math.abs(x - World.camX) > World.vw / 2 + 30 || Math.abs(y - World.camY) > World.vh / 2 + 30) {
+      if (Math.abs(x - World.camX) > viewW / 2 + 30 || Math.abs(y - World.camY) > viewH / 2 + 30) {
         return { x, y };
       }
     }
@@ -578,7 +579,9 @@ const Game = {
     World.drawBackdrop(ctx);
 
     ctx.save();
-    ctx.translate(Math.round(World.vw / 2 - World.camX + sx), Math.round(World.vh / 2 - World.camY + sy));
+    const z = World.zoom;
+    ctx.scale(z, z);
+    ctx.translate(Math.round(World.vw / 2 / z - World.camX + sx), Math.round(World.vh / 2 / z - World.camY + sy));
 
     World.drawGrid(ctx);
     drawGems(ctx);

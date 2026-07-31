@@ -4,6 +4,7 @@ const World = {
   W: 3200, H: 3200,
   camX: 1600, camY: 1600,
   vw: 0, vh: 0,
+  zoom: 1,
   t: 0,
   starLayers: [],
   nebulas: [],
@@ -61,6 +62,13 @@ const World = {
 
   resize(w, h) {
     this.vw = w; this.vh = h;
+    // 小屏拉远镜头：让手机上的战场可见范围更大
+    const min = Math.min(w, h);
+    this.zoom = min <= 500 ? 0.5
+      : min <= 700 ? 0.62
+      : min <= 900 ? 0.78
+      : min <= 1050 ? 0.9
+      : 1;
     this.bgGrad = null;
   },
 
@@ -69,9 +77,11 @@ const World = {
     const k = Math.min(1, dt * 5.5);
     this.camX += (tx - this.camX) * k;
     this.camY += (ty - this.camY) * k;
-    if (this.vw < this.W) this.camX = U.clamp(this.camX, this.vw / 2, this.W - this.vw / 2);
+    const z = this.zoom;
+    const viewW = this.vw / z, viewH = this.vh / z;
+    if (viewW < this.W) this.camX = U.clamp(this.camX, viewW / 2, this.W - viewW / 2);
     else this.camX = this.W / 2;
-    if (this.vh < this.H) this.camY = U.clamp(this.camY, this.vh / 2, this.H - this.vh / 2);
+    if (viewH < this.H) this.camY = U.clamp(this.camY, viewH / 2, this.H - viewH / 2);
     else this.camY = this.H / 2;
   },
 
@@ -139,10 +149,11 @@ const World = {
 
   /* 世界空间：网格 + 边界 */
   drawGrid(ctx) {
-    const left = this.camX - this.vw / 2 - 8;
-    const right = this.camX + this.vw / 2 + 8;
-    const top = this.camY - this.vh / 2 - 8;
-    const bottom = this.camY + this.vh / 2 + 8;
+    const z = this.zoom;
+    const left = this.camX - this.vw / z / 2 - 8;
+    const right = this.camX + this.vw / z / 2 + 8;
+    const top = this.camY - this.vh / z / 2 - 8;
+    const bottom = this.camY + this.vh / z / 2 + 8;
     const GS = 128;
 
     ctx.lineWidth = 1;
