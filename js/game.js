@@ -88,29 +88,32 @@ const Game = {
 
   handlePadUI() {
     const pad = Input.consumePadUI();
-    if (!(pad.confirm || pad.pause || pad.left || pad.right)) return;
+    if (!(pad.confirm || pad.pause || pad.mute || pad.left || pad.right || pad.up || pad.down)) return;
     const st = this.state;
-    if (pad.pause) {
-      if (st === 'playing' || st === 'paused') { this.togglePause(); return; }
-      if (st === 'menu' || st === 'over') {
-        AudioSys.init(); AudioSys.resume();
-        this.start();
-        return;
-      }
+    const nav = (pad.left || pad.up) ? -1 : ((pad.right || pad.down) ? 1 : 0);
+    if (pad.mute) {
+      AudioSys.init(); AudioSys.resume();
+      const m = AudioSys.toggleMute();
+      if (st !== 'menu') UI.announce(m ? '已静音' : '声音开启');
+      return;
     }
-    if (pad.confirm) {
-      if (st === 'menu' || st === 'over') {
-        AudioSys.init(); AudioSys.resume();
-        this.start();
-        return;
-      }
-      if (st === 'levelup') { UI.pickCursor(); return; }
-      if (st === 'paused') { this.togglePause(); return; }
+    if (st === 'menu' || st === 'over') {
+      if (nav) UI.moveMenuCursor(nav);
+      if (pad.confirm || pad.pause) UI.confirmMenu();
+      return;
     }
     if (st === 'levelup') {
-      if (pad.left) UI.moveCursor(-1);
-      if (pad.right) UI.moveCursor(1);
+      if (nav) UI.moveCursor(nav);
+      if (pad.confirm) UI.pickCursor();
+      return;
     }
+    if (st === 'paused') {
+      if (nav) UI.moveMenuCursor(nav);
+      if (pad.confirm) UI.confirmMenu();
+      else if (pad.pause) this.togglePause();
+      return;
+    }
+    if (pad.pause) this.togglePause();
   },
 
   gameOver() {

@@ -7,6 +7,8 @@ const UI = {
   _lastCombo: 0,
   _curOpts: null,
   _cursor: 0,
+  _menuBtns: [],
+  _menuCursor: 0,
 
   init() {
     const ids = [
@@ -44,6 +46,34 @@ const UI = {
       this.els[map[k]].classList.toggle('hidden', k !== name);
     }
     this.els.hud.classList.toggle('hidden', !(name === null || name === 'levelup' || name === 'pause'));
+    if (name === 'start' || name === 'pause' || name === 'over') this.enterMenu(name);
+  },
+
+  enterMenu(name) {
+    const screen = this.els['screen-' + name];
+    this._menuBtns = screen ? Array.from(screen.querySelectorAll('.btn:not(.hidden)')) : [];
+    this._menuCursor = 0;
+    this.highlightMenu();
+  },
+
+  moveMenuCursor(d) {
+    if (!this._menuBtns.length) return;
+    this._menuCursor = (this._menuCursor + d + this._menuBtns.length) % this._menuBtns.length;
+    this.highlightMenu();
+    AudioSys.init(); AudioSys.resume();
+    AudioSys.uiClick();
+  },
+
+  highlightMenu() {
+    for (let i = 0; i < this._menuBtns.length; i++) {
+      this._menuBtns[i].classList.toggle('selected', i === this._menuCursor);
+    }
+  },
+
+  confirmMenu() {
+    if (this._menuBtns.length && this._menuBtns[this._menuCursor]) {
+      this._menuBtns[this._menuCursor].click();
+    }
   },
 
   set(id, txt) {
@@ -166,6 +196,7 @@ const UI = {
     if (!this._curOpts || !this._curOpts.length) return;
     this._cursor = (this._cursor + d + this._curOpts.length) % this._curOpts.length;
     this.highlightCards();
+    AudioSys.init(); AudioSys.resume();
     AudioSys.uiClick();
   },
 

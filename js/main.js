@@ -34,6 +34,7 @@
 if (fullscreenBtn) {
   fullscreenBtn.addEventListener('click', async () => {
     try {
+      AudioSys.init(); AudioSys.resume(); AudioSys.uiClick();
       if (!document.fullscreenElement) {
         await document.documentElement.requestFullscreen();
 

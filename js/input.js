@@ -6,7 +6,8 @@ const Input = {
   dashQueued: false,
   pad: { dashPrev: false, dashEdge: false, confirmPrev: false, confirmEdge: false,
          pausePrev: false, pauseEdge: false, navPrevL: false, navLEdge: false,
-         navPrevR: false, navREdge: false, x: 0, y: 0 },
+         navPrevR: false, navREdge: false, navPrevU: false, navUEdge: false,
+         navPrevD: false, navDEdge: false, mutePrev: false, muteEdge: false, x: 0, y: 0 },
   joyEl: null, stickEl: null,
 
   init(canvas) {
@@ -18,6 +19,9 @@ const Input = {
       this.keys[e.code] = true;
     });
     addEventListener('keyup', (e) => { this.keys[e.code] = false; });
+    addEventListener('gamepadconnected', () => {
+      if (typeof AudioSys !== 'undefined') { AudioSys.init(); AudioSys.resume(); }
+    });
     addEventListener('blur', () => { this.keys = Object.create(null); this.joy.active = false; });
 
     this.joyEl = document.getElementById('joystick');
@@ -89,6 +93,9 @@ const Input = {
       this.pad.pausePrev = false;
       this.pad.navPrevL = false;
       this.pad.navPrevR = false;
+      this.pad.navPrevU = false;
+      this.pad.navPrevD = false;
+      this.pad.mutePrev = false;
       return;
     }
     const DEAD = 0.18;
@@ -110,12 +117,20 @@ const Input = {
     if (navL && !this.pad.navPrevL) this.pad.navLEdge = true;
     if (navR && !this.pad.navPrevR) this.pad.navREdge = true;
     this.pad.navPrevL = navL; this.pad.navPrevR = navR;
+    const navU = (b[12] && b[12].pressed) || y < -0.6;
+    const navD = (b[13] && b[13].pressed) || y > 0.6;
+    if (navU && !this.pad.navPrevU) this.pad.navUEdge = true;
+    if (navD && !this.pad.navPrevD) this.pad.navDEdge = true;
+    this.pad.navPrevU = navU; this.pad.navPrevD = navD;
     const confirmNow = !!(b[0] && b[0].pressed);
     if (confirmNow && !this.pad.confirmPrev) this.pad.confirmEdge = true;
     this.pad.confirmPrev = confirmNow;
     const pauseNow = !!(b[9] && b[9].pressed);
     if (pauseNow && !this.pad.pausePrev) this.pad.pauseEdge = true;
     this.pad.pausePrev = pauseNow;
+    const muteNow = !!(b[8] && b[8].pressed);
+    if (muteNow && !this.pad.mutePrev) this.pad.muteEdge = true;
+    this.pad.mutePrev = muteNow;
   },
 
   consumePadUI() {
@@ -125,9 +140,14 @@ const Input = {
       pause: this.pad.pauseEdge,
       left: this.pad.navLEdge,
       right: this.pad.navREdge,
+      up: this.pad.navUEdge,
+      down: this.pad.navDEdge,
+      mute: this.pad.muteEdge,
     };
     this.pad.confirmEdge = false; this.pad.pauseEdge = false;
     this.pad.navLEdge = false; this.pad.navREdge = false;
+    this.pad.navUEdge = false; this.pad.navDEdge = false;
+    this.pad.muteEdge = false;
     return r;
   },
 
