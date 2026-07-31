@@ -86,6 +86,24 @@ const Game = {
     }
   },
 
+  toMenu() {
+    resetEntities();
+    FX.clear();
+    player = null;
+    this.boss = null;
+    this.state = 'menu';
+    this.time = 0; this.wave = 1;
+    this.score = 0; this.kills = 0;
+    this.combo = 0; this.comboT = 0; this.maxCombo = 0;
+    this.spawnT = 0.6; this.trauma = 0; this.flash = 0;
+    this.hitstop = 0; this.timeScale = 1;
+    this.pendingLevels = 0; this.pickStreak = 0; this.pickT = 0;
+    AudioSys.stopMusic();
+    UI._cache = {};
+    UI.showScreen('start');
+    World.snapCam(World.W / 2, World.H / 2);
+  },
+
   handlePadUI() {
     const pad = Input.consumePadUI();
     if (!(pad.confirm || pad.pause || pad.mute || pad.left || pad.right || pad.up || pad.down)) return;

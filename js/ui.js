@@ -18,7 +18,7 @@ const UI = {
       'best-score', 'cards',
       'stat-time', 'stat-wave', 'stat-level', 'stat-kills', 'stat-combo', 'stat-score', 'stat-best',
       'record-badge',
-      'btn-start', 'btn-retry', 'btn-resume', 'btn-restart',
+      'btn-start', 'btn-retry', 'btn-resume', 'btn-restart', 'btn-menu',
     ];
     for (const id of ids) this.els[id] = document.getElementById(id);
 
@@ -35,6 +35,7 @@ const UI = {
     bindTap(this.els['btn-retry'], () => Game.start());
     bindTap(this.els['btn-resume'], () => Game.togglePause());
     bindTap(this.els['btn-restart'], () => Game.start());
+    bindTap(this.els['btn-menu'], () => Game.toMenu());
   },
 
   showScreen(name) {
