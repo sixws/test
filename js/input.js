@@ -104,6 +104,11 @@ const Input = {
     if (l > 0 && l < DEAD) { x = 0; y = 0; }
     if (l > 1) { x /= l; y /= l; }
     const b = gp.buttons;
+    // 手柄一有操作就隐藏触屏冲刺按钮
+    let used = false;
+    for (const bt of b) { if (bt && bt.pressed) { used = true; break; } }
+    if (!used && (Math.abs(x) > 0.3 || Math.abs(y) > 0.3)) used = true;
+    if (used && document.body.classList.contains('touch')) document.body.classList.remove('touch');
     if (b[12] && b[12].pressed) y = -1;
     if (b[13] && b[13].pressed) y = 1;
     if (b[14] && b[14].pressed) x = -1;
